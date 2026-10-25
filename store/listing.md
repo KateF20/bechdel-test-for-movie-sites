@@ -3,10 +3,10 @@
 Source for the fields of the Developer Dashboard. The name and the summary come
 from the manifest (`src/manifest.ts`); everything else is entered by hand.
 
-Do not name the supported sites in the description: a bulleted list of all of
-them, and then a sentence naming six of them, were both rejected as excessive
-keywords (violation "Yellow Argon"). The summary in the manifest, which names
-four, passed. Point to the project page for the full list instead.
+Name at most the four most visited sites in the description and point to the
+project page for the rest: a bulleted list of all of them, and then a sentence
+naming six, were both rejected as excessive keywords (violation "Yellow
+Argon"), while the manifest summary naming four passed.
 
 ## Store listing
 
@@ -28,9 +28,9 @@ bechdeltest.com, where its community has rated more than 10,000 movies.
 ON MOVIE SITES
 A badge next to the title shows the score from 0 to 3 and links to the movie's
 page on bechdeltest.com. Movies that are not rated yet get a link to add them.
-It works on eleven popular movie sites, from international catalogs to
-regional ones in Russia, China, Spain, France and Poland. The full list is on
-the project page: https://github.com/rrokot/bechdel-test-for-movie-sites
+It works on IMDb, Kinopoisk, Letterboxd, Rotten Tomatoes and seven more
+popular movie sites; the full list is on the project page:
+https://github.com/rrokot/bechdel-test-for-movie-sites
 
 ON BECHDELTEST.COM
 • IMDb and Kinopoisk ratings before every movie, color-coded and linked
