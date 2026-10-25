@@ -1,0 +1,24 @@
+{
+  "data": {
+    "t0": {
+      "ratingsSummary": { "aggregateRating": 9.3, "voteCount": 3257523 },
+      "genres": { "genres": [{ "text": "Drama" }] },
+      "titleText": { "text": "The Shawshank Redemption" },
+      "originalTitleText": { "text": "The Shawshank Redemption" },
+      "releaseYear": { "year": 1994 },
+      "principalCredits": [
+        { "credits": [{ "category": { "id": "director" }, "name": { "nameText": { "text": "Frank Darabont" } } }] },
+        { "credits": [{ "category": { "id": "writer" }, "name": { "nameText": { "text": "Stephen King" } } }] }
+      ]
+    },
+    "t1": {
+      "ratingsSummary": { "aggregateRating": null, "voteCount": 0 },
+      "genres": { "genres": [{ "text": "Action" }, { "text": "Comedy" }, { "text": "Crime" }, { "text": "Drama" }] }
+    },
+    "t2": null,
+    "t3": null
+  },
+  "errors": [
+    { "message": "Internal error", "path": ["t3", "ratingsSummary"] }
+  ]
+}

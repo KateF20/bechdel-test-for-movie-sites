@@ -1,0 +1,26 @@
+{
+  "head" : {
+    "vars" : [ "imdb", "kp" ]
+  },
+  "results" : {
+    "bindings" : [ {
+      "imdb" : {
+        "type" : "literal",
+        "value" : "tt0068646"
+      },
+      "kp" : {
+        "type" : "literal",
+        "value" : "325"
+      }
+    }, {
+      "imdb" : {
+        "type" : "literal",
+        "value" : "tt0111161"
+      },
+      "kp" : {
+        "type" : "literal",
+        "value" : "326"
+      }
+    } ]
+  }
+}

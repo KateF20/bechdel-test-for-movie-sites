@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bechdel Test Everywhere</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font: 13px/1.4 system-ui, sans-serif;
+    }
+    body {
+      width: 260px;
+      margin: 0;
+      padding: 14px 16px;
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: 14px;
+    }
+    h2 {
+      margin: 0 0 2px;
+      font-size: 12px;
+    }
+    section + section {
+      margin-top: 14px;
+    }
+    p {
+      margin: 0 0 8px;
+      color: GrayText;
+    }
+    button {
+      width: 100%;
+      padding: 6px 10px;
+      font: inherit;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Bechdel Test Everywhere</h1>
+  <section>
+    <h2>Bechdel scores</h2>
+    <p id="db-status">&nbsp;</p>
+    <button id="sync" type="button">Sync now</button>
+  </section>
+  <section>
+    <h2>Ratings cache</h2>
+    <p id="cache-status">&nbsp;</p>
+    <button id="clear-cache" type="button" disabled>Clear cache</button>
+  </section>
+  <script src="popup.js"></script>
+</body>
+</html>

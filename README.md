@@ -1,63 +1,100 @@
-# Bechdeltest Enhanced
+# Bechdel Test Everywhere
 
-A lightweight Tampermonkey userscript that adds ratings, genres, and filters to
-[bechdeltest.com](https://bechdeltest.com/).
+A Chrome extension that brings [bechdeltest.com](https://bechdeltest.com/)
+scores to popular movie catalogs and adds Kinopoisk and IMDb ratings, genres and
+filters to bechdeltest.com itself.
 
-## Features
+## On movie catalogs
 
-- KP and IMDb ratings displayed before each movie title
-- Color-coded rating badges
-- Direct links to KP and IMDb title pages
-- Up to three IMDb genres per movie
-- Minimum KP and IMDb rating filters
-- Minimum Bechdel score filter
-- Multi-select genre exclusion filter
-- Wider, non-wrapping movie list on desktop
-- Progress indicator while ratings are still loading
-- Independent source loading, controlled concurrency, and seven-day caching
-- No API key or registration required
+Every movie page gets a badge next to its title with the Bechdel Test score,
+linking to the movie on bechdeltest.com. Movies that are not rated yet get a
+link to add them.
 
-## Installation
-
-1. Install [Tampermonkey](https://www.tampermonkey.net/).
-2. Open the Tampermonkey extension settings and enable **Allow User Scripts**.
-3. Open the
-   [userscript installer](https://raw.githubusercontent.com/rrokot/bechdeltest-enhanced/main/bechdeltest-enhanced.user.js).
-4. Confirm the installation in Tampermonkey.
-5. Open [bechdeltest.com](https://bechdeltest.com/).
-
-Tampermonkey checks the `@updateURL` automatically, so installed copies receive
-new releases without manual replacement.
-
-## Filters
-
-| Control | Behavior |
+| Catalog | Movie pages |
 | --- | --- |
-| `KP ≥` | Minimum KP rating |
-| `IMDb ≥` | Minimum IMDb rating |
-| `B ≥` | Minimum Bechdel score |
-| `Genre −` | Click genres to mark them with `×` and exclude them |
+| IMDb | `imdb.com/title/…` |
+| Kinopoisk | `kinopoisk.ru/film/…`, `/series/…` |
+| Letterboxd | `letterboxd.com/film/…` |
+| TMDB | `themoviedb.org/movie/…`, `/tv/…` |
+| Trakt | `trakt.tv/movies/…`, `/shows/…` |
+| Rotten Tomatoes | `rottentomatoes.com/m/…`, `/tv/…` |
+| Metacritic | `metacritic.com/movie/…`, `/tv/…` |
+| Douban | `movie.douban.com/subject/…` |
+| FilmAffinity | `filmaffinity.com/…/film….html` |
+| AlloCiné | `allocine.fr/film/fichefilm_gen_cfilm=….html` |
+| Filmweb | `filmweb.pl/film/…`, `/serial/…` |
 
-Filter settings persist across pages.
+## On bechdeltest.com
 
-## Data sources
+- KP and IMDb ratings before each movie title, color-coded and linked to the
+  title pages
+- Up to three IMDb genres per movie
+- Filters by minimum KP rating, IMDb rating and Bechdel score, plus genre
+  exclusion; settings sync across tabs and devices
+- Wider, non-wrapping movie list on desktop
 
-The userscript uses the IMDb ID already present on Bechdel Test:
+## How it works
 
-- Wikidata resolves IMDb IDs to Kinopoisk IDs.
+**Bechdel scores.** bechdeltest.com has no API, so the extension keeps a local
+copy of its movie list (about 11,000 movies). The first sync downloads the 55
+list pages; after that a daily sync reads the sitemap and downloads only the
+pages whose date changed.
+
+**Matching catalog pages.** Each catalog identifies a movie by its own id in
+the URL. Wikidata maps that id to an IMDb id (cached for 30 days), and the IMDb
+id finds the movie in the local copy. Letterboxd and Douban pages also show the
+IMDb id themselves, which is used when Wikidata has no mapping.
+
+**Ratings on bechdeltest.com.**
+
+- IMDb GraphQL provides IMDb ratings and genres for the whole page in one
+  request.
+- Wikidata resolves IMDb IDs to Kinopoisk IDs in one request.
 - The public Kinopoisk XML rating widget provides KP ratings.
-- IMDb GraphQL provides IMDb ratings and genres.
+- When Wikidata has no Kinopoisk ID, the extension searches Kinopoisk by the
+  IMDb title and year, then by title alone allowing a one-year difference. A
+  result is accepted only when its normalized title, year and director match
+  the IMDb metadata. Ambiguous results stay unresolved.
+- Ratings are cached for seven days, missing ratings for one day. Failed
+  requests are not cached and are retried on the next visit.
 
-IMDb data loads for the whole page in one request. Kinopoisk IDs are resolved in
-one Wikidata request, then individual rating XML files load through a concurrent
-worker pool. Successful results are cached for seven days, while missing results
-are cached for one day.
+Kinopoisk pages are requested with the browser's Kinopoisk cookies. If
+Kinopoisk asks for a captcha or a sign-in check, open
+[kinopoisk.ru](https://www.kinopoisk.ru/) once and reload the page.
 
-When Wikidata has no Kinopoisk ID, the userscript performs a sequential
-Kinopoisk search using the IMDb title and year. If there is no exact match, it
-retries without the year and allows a one-year catalog difference. A result is
-accepted only when its normalized title and director match the IMDb metadata
-exactly. Blocked, missing, or ambiguous search results remain unresolved.
+The toolbar popup shows the state of the local copy, syncs it on demand and
+clears the ratings cache.
+
+## Privacy
+
+The extension does not collect, store remotely or transmit any personal data.
+It downloads the public movie list from bechdeltest.com, and sends only IMDb
+IDs, catalog movie IDs, movie titles and Kinopoisk IDs to the sources listed
+above. The local copy, cached ratings and filter settings stay in Chrome
+storage.
+
+## Development
+
+Requires Node.js 24 or newer.
+
+```sh
+npm install
+npm run build   # build into dist/
+npm run watch   # rebuild on source changes
+npm run check   # type-check
+npm test        # unit tests
+npm run zip     # build a Chrome Web Store package
+```
+
+Load `dist/` via `chrome://extensions` → **Developer mode** → **Load
+unpacked**. After `npm run watch` rebuilds, press the reload button on the
+extension card. Changes in `static/` or the manifest need a full
+`npm run build`.
+
+The manifest is generated by `src/manifest.ts`: catalog hosts come from
+`src/catalog/sites.ts`, fetch hosts from `src/shared/config.ts`, and the
+version from `package.json`. Adding a catalog means adding one entry to
+`SITES`.
 
 ## License
 

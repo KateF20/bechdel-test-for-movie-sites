@@ -1,0 +1,26 @@
+import type { ImdbRating } from '../sources/imdb.ts';
+import { createCache } from './cache.ts';
+import { CONFIG } from './config.ts';
+
+export type KinopoiskEntry = {
+  // null when no verified Kinopoisk title exists for the IMDb id.
+  kinopoiskId: string | null;
+  rating: number | null;
+  votes: number | null;
+};
+
+const ttlByRating = ({ rating }: { rating: number | null }) => (
+  rating === null ? CONFIG.missCacheTtl : CONFIG.cacheTtl
+);
+
+export const imdbCache = createCache<ImdbRating>({ name: 'imdb', version: 1, ttl: ttlByRating });
+export const kinopoiskCache = createCache<KinopoiskEntry>({ name: 'kinopoisk', version: 1, ttl: ttlByRating });
+
+// Keyed by "<Wikidata property>:<catalog id>".
+export const imdbIdCache = createCache<{ imdbId: string | null }>({
+  name: 'imdb-id',
+  version: 1,
+  ttl: ({ imdbId }) => (imdbId === null ? CONFIG.missCacheTtl : CONFIG.idCacheTtl),
+});
+
+export const caches = [imdbCache, kinopoiskCache, imdbIdCache];

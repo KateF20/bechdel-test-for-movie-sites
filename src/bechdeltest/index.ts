@@ -1,0 +1,69 @@
+import { loadImdb } from './loaders/imdb.ts';
+import { loadKinopoisk } from './loaders/kinopoisk.ts';
+import { progress, type MoviePatch, type Source, type Update } from './model.ts';
+import { collectMovies, renderMovie } from './ui/badges.ts';
+import { applyFilters, loadFilters, onFiltersChanged, saveFilters, type Filters } from './ui/filters.ts';
+import { mountPanel } from './ui/panel.ts';
+
+const sourcePatch = (source: Source, reason: string): MoviePatch => {
+  const state = { status: 'error', reason } as const;
+  return source === 'kp' ? { kp: state } : { imdb: state };
+};
+
+const main = async () => {
+  const movies = collectMovies(document);
+  if (!movies.size) return;
+
+  const list = document.querySelector<HTMLElement>('.list');
+  const hasRows = [...movies.values()].some(({ views }) => views.some(({ row }) => row));
+  let filters: Filters = await loadFilters();
+
+  const setFilters = (next: Filters) => {
+    filters = next;
+    scheduleRefresh();
+  };
+  const panel = list && hasRows
+    ? mountPanel(list, filters, (next) => {
+      setFilters(next);
+      void saveFilters(next);
+    })
+    : null;
+  onFiltersChanged((next) => {
+    panel?.setFilters(next);
+    setFilters(next);
+  });
+
+  // Ratings arrive one by one; coalesce re-filtering into one pass per frame.
+  let frame = 0;
+  function scheduleRefresh() {
+    frame ||= requestAnimationFrame(() => {
+      frame = 0;
+      if (!list || !panel) return;
+      applyFilters(list, movies.values(), filters);
+      panel.setGenres([...movies.values()].flatMap(({ genres }) => genres ?? []));
+      panel.setProgress(progress(movies.values()));
+    });
+  }
+  scheduleRefresh();
+
+  const update: Update = (imdbId, patch) => {
+    const movie = movies.get(imdbId);
+    if (!movie) return;
+    Object.assign(movie, patch);
+    renderMovie(movie);
+    scheduleRefresh();
+  };
+
+  // Whatever goes wrong inside a loader, no badge may stay "loading" forever.
+  const run = (source: Source, load: (ids: string[], update: Update) => Promise<void>) => (
+    load([...movies.keys()], update).catch((error: unknown) => {
+      console.error('[Bechdel ratings]', error);
+      for (const movie of movies.values()) {
+        if (movie[source].status === 'loading') update(movie.imdbId, sourcePatch(source, 'Unexpected error'));
+      }
+    })
+  );
+  await Promise.all([run('imdb', loadImdb), run('kp', loadKinopoisk)]);
+};
+
+void main();
