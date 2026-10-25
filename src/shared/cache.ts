@@ -36,18 +36,20 @@ export const createCache = <T>({ name, version, ttl }: {
   };
 };
 
-const cacheKeys = async () => (
-  Object.keys(await chrome.storage.local.get(null)).filter((key) => key.startsWith(ROOT))
-);
+// Lists keys without reading values: storage also holds the 1.3 MB Bechdel
+// database, which cache maintenance must not load.
+const cacheKeys = async () => (await chrome.storage.local.getKeys()).filter((key) => key.startsWith(ROOT));
 
 export const pruneCaches = async (active: readonly Cache<unknown>[], now = Date.now()) => {
-  const stored = await chrome.storage.local.get(null);
-  const stale = Object.entries(stored)
-    .filter(([key, entry]) => key.startsWith(ROOT) && (
-      !active.some(({ prefix }) => key.startsWith(prefix))
-      || (entry as Entry<unknown>).expiresAt <= now
-    ))
-    .map(([key]) => key);
+  const keys = await cacheKeys();
+  const isActive = (key: string) => active.some(({ prefix }) => key.startsWith(prefix));
+  const current = keys.filter(isActive);
+  const stored = current.length ? await chrome.storage.local.get(current) : {};
+  const isExpired = (key: string) => {
+    const entry = stored[key] as Entry<unknown> | undefined;
+    return !entry || entry.expiresAt <= now;
+  };
+  const stale = [...keys.filter((key) => !isActive(key)), ...current.filter(isExpired)];
   if (stale.length) await chrome.storage.local.remove(stale);
 };
 

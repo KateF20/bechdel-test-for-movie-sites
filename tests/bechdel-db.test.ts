@@ -125,4 +125,43 @@ describe('bechdel database', () => {
 
     expect(requestedUrls(transport)).toHaveLength(2);
   });
+
+  it('rewrites only changed pages and drops pages gone from the sitemap', async () => {
+    let pages: Record<string, string> = { '/': '2026-10-15', '/page/1/': '2026-10-01' };
+    const transport = mockFetch((request, url) => (
+      url.pathname === '/sitemap.xml' ? { text: sitemap(pages) } : { text: row('tt1', 3, 'one') }
+    ));
+    const db = await load(transport);
+    await db.syncBechdelDb();
+    const set = vi.mocked(chrome.storage.local.set);
+
+    set.mockClear();
+    await db.syncBechdelDb();
+    expect(set.mock.calls.map(([items]) => Object.keys(items))).toEqual([['bechdel:v1:meta']]);
+
+    pages = { '/': '2026-10-15' };
+    await db.syncBechdelDb();
+    expect(await chrome.storage.local.getKeys()).not.toContain('bechdel:v1:page:https://bechdeltest.com/page/1/');
+  });
+
+  it('survives a worker restart from storage alone', async () => {
+    const transport = mockFetch((request, url) => (
+      url.pathname === '/sitemap.xml' ? { text: sitemap({ '/': '2026-10-15' }) } : { text: row('tt1', 2, 'one') }
+    ));
+    await (await load(transport)).syncBechdelDb();
+    transport.mockClear();
+
+    const restarted = await load(transport);
+    await expect(restarted.findBechdelMovie('tt1')).resolves.toMatchObject({ score: 2 });
+    expect(transport).not.toHaveBeenCalled();
+  });
+
+  it('removes data of retired storage versions only', async () => {
+    await chrome.storage.local.set({ 'bechdel:db': {}, 'bechdel:v0:meta': {}, 'bechdel:v1:meta': {}, filters: {} });
+    const db = await load(mockFetch(() => 'network'));
+
+    await db.dropRetiredBechdelDb();
+
+    expect((await chrome.storage.local.getKeys()).sort()).toEqual(['bechdel:v1:meta', 'filters']);
+  });
 });

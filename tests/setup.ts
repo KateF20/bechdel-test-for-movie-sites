@@ -13,6 +13,7 @@ const createStorageArea = () => {
     remove: vi.fn(async (keys: string | string[]) => {
       for (const key of [keys].flat()) data.delete(key);
     }),
+    getKeys: vi.fn(async () => [...data.keys()]),
   };
 };
 

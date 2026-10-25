@@ -4,10 +4,10 @@ import { CONFIG } from '../shared/config.ts';
 import { useTransport } from '../shared/http.ts';
 import type { Message, Reply, RequestType, Requests, TitleRef } from '../shared/messages.ts';
 import { resolveImdbId } from '../sources/wikidata.ts';
-import { bechdelStatus, findBechdelMovie, syncBechdelDb } from './bechdel-db.ts';
+import { bechdelStatus, dropRetiredBechdelDb, findBechdelMovie, syncBechdelDb } from './bechdel-db.ts';
 import { fetchDirect } from './proxy.ts';
 
-const SYNC_ALARM = 'bechdel-sync';
+const MAINTENANCE_ALARM = 'daily-maintenance';
 
 useTransport(fetchDirect);
 
@@ -52,22 +52,30 @@ chrome.runtime.onMessage.addListener((message: Message, sender, sendResponse: (r
   return true;
 });
 
-const syncInBackground = () => {
-  syncBechdelDb().catch((error: unknown) => console.warn('[Bechdel] Sync failed', error));
+const warn = (error: unknown) => console.warn('[Bechdel] Maintenance failed', error);
+
+// Daily: refresh the Bechdel copy and drop expired cache entries.
+const maintain = () => {
+  pruneCaches(caches).catch(warn);
+  syncBechdelDb().catch(warn);
 };
 
+const ensureAlarm = async () => {
+  if (!await chrome.alarms.get(MAINTENANCE_ALARM)) {
+    await chrome.alarms.create(MAINTENANCE_ALARM, { periodInMinutes: CONFIG.bechdelSyncInterval / 60_000 });
+  }
+};
+
+// Alarms and storage outlive updates: after one, keep only what this version
+// uses.
 chrome.runtime.onInstalled.addListener(() => {
-  void pruneCaches(caches);
-  syncInBackground();
+  chrome.alarms.clearAll().then(ensureAlarm).catch(warn);
+  dropRetiredBechdelDb().catch(warn);
+  maintain();
 });
-chrome.runtime.onStartup.addListener(() => void pruneCaches(caches));
 chrome.alarms.onAlarm.addListener(({ name }) => {
-  if (name === SYNC_ALARM) syncInBackground();
+  if (name === MAINTENANCE_ALARM) maintain();
 });
 
 // Alarms may be dropped on browser restart; make sure the daily one exists.
-void chrome.alarms.get(SYNC_ALARM).then((alarm) => {
-  if (!alarm) {
-    void chrome.alarms.create(SYNC_ALARM, { periodInMinutes: CONFIG.bechdelSyncInterval / 60_000 });
-  }
-});
+ensureAlarm().catch(warn);

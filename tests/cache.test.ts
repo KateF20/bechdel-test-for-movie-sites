@@ -35,6 +35,19 @@ describe('cache', () => {
     expect(Object.keys(await chrome.storage.local.get(null)).sort()).toEqual(['cache:test:v2:tt1', 'filters']);
   });
 
+  it('never reads values that are not cache entries', async () => {
+    await cache.set('tt1', { rating: 7 });
+    await chrome.storage.local.set({ 'bechdel:v1:page:x': ['large'] });
+    vi.mocked(chrome.storage.local.get).mockClear();
+
+    await pruneCaches([cache]);
+    await countCacheEntries();
+    await clearCaches();
+
+    const read = vi.mocked(chrome.storage.local.get).mock.calls.flatMap(([keys]) => [keys].flat());
+    expect(read).toEqual(['cache:test:v2:tt1']);
+  });
+
   it('counts and clears only cache entries', async () => {
     await cache.set('tt1', { rating: 7 });
     await chrome.storage.local.set({ filters: {} });
