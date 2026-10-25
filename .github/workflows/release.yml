@@ -34,7 +34,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-  # Runs once the store's repository variables are configured.
+  # Runs once CWS_ITEM_ID is set. Job conditions cannot read secrets, and the
+  # item ID is public anyway; the account details are secrets.
   chrome-web-store:
     needs: package
     if: vars.CWS_ITEM_ID != ''
@@ -56,12 +57,12 @@ jobs:
       - id: auth
         uses: google-github-actions/auth@v3
         with:
-          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ vars.CWS_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.CWS_SERVICE_ACCOUNT }}
           token_format: access_token
           access_token_scopes: https://www.googleapis.com/auth/chromewebstore
       - run: node scripts/publish.ts bechdeltest-everywhere-*.zip
         env:
           CWS_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
-          CWS_PUBLISHER_ID: ${{ vars.CWS_PUBLISHER_ID }}
+          CWS_PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}
           CWS_ITEM_ID: ${{ vars.CWS_ITEM_ID }}

@@ -119,40 +119,37 @@ Publishing uses the Chrome Web Store API v2 with a service account and Workload
 Identity Federation: GitHub's OIDC token is exchanged for a short-lived access
 token, so no keys or refresh tokens are stored anywhere.
 
-1. In a Google Cloud project, enable the APIs and create a service account
-   (it needs no roles):
+The Google Cloud side is shared by all of the publisher's extensions, because
+a publisher can have only one service account. One Google Cloud project holds:
 
-   ```sh
-   gcloud services enable chromewebstore.googleapis.com iamcredentials.googleapis.com sts.googleapis.com
-   gcloud iam service-accounts create chrome-web-store
-   ```
+- the Chrome Web Store, IAM, IAM Credentials and STS APIs, enabled;
+- a service account with no IAM roles, added in the Developer Dashboard under
+  **Account**;
+- a Workload Identity pool `github` with an OIDC provider that accepts only
+  repositories of the owner's numeric GitHub user ID (unlike a login, it can
+  never be taken over by someone else):
 
-2. Add the service account's email in the Chrome Web Store Developer Dashboard
-   under **Account**. A publisher can have one service account.
-3. Let this repository's workflows impersonate it:
+  ```sh
+  gcloud iam workload-identity-pools create github --location=global
+  gcloud iam workload-identity-pools providers create-oidc OWNER     --location=global --workload-identity-pool=github     --issuer-uri=https://token.actions.githubusercontent.com     --attribute-mapping=google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.repository_owner_id=assertion.repository_owner_id     --attribute-condition="assertion.repository_owner_id == 'GITHUB_USER_ID'"
+  ```
 
-   ```sh
-   gcloud iam workload-identity-pools create github --location=global
-   gcloud iam workload-identity-pools providers create-oidc bechdeltest-enhanced \
-     --location=global --workload-identity-pool=github \
-     --issuer-uri=https://token.actions.githubusercontent.com \
-     --attribute-mapping=google.subject=assertion.sub,attribute.repository=assertion.repository \
-     --attribute-condition="assertion.repository == 'rrokot/bechdeltest-enhanced'"
-   gcloud iam service-accounts add-iam-policy-binding \
-     chrome-web-store@PROJECT_ID.iam.gserviceaccount.com \
-     --role=roles/iam.workloadIdentityUser \
-     --member=principalSet://iam.googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/github/attribute.repository/rrokot/bechdeltest-enhanced
-   ```
+Each repository is then allowed to impersonate the service account on its own:
 
-4. Set the repository variables (**Settings → Secrets and variables →
-   Actions → Variables**):
+```sh
+gcloud iam service-accounts add-iam-policy-binding SERVICE_ACCOUNT_EMAIL   --role=roles/iam.workloadIdentityUser   --member=principalSet://iam.googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/github/attribute.repository/OWNER/REPOSITORY
+```
 
-   | Variable | Value |
-   | --- | --- |
-   | `GCP_WORKLOAD_IDENTITY_PROVIDER` | `projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/github/providers/bechdeltest-enhanced` |
-   | `CWS_SERVICE_ACCOUNT` | `chrome-web-store@PROJECT_ID.iam.gserviceaccount.com` |
-   | `CWS_PUBLISHER_ID` | Developer Dashboard → **Publisher → Settings** |
-   | `CWS_ITEM_ID` | The extension's ID in the Developer Dashboard |
+The workflow reads the account details from repository secrets (**Settings →
+Secrets and variables → Actions**), so they stay out of this file and are
+masked in the public workflow logs:
+
+| Name | Kind | Value |
+| --- | --- | --- |
+| `GCP_WORKLOAD_IDENTITY_PROVIDER` | secret | `projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/github/providers/OWNER` |
+| `CWS_SERVICE_ACCOUNT` | secret | The service account's email |
+| `CWS_PUBLISHER_ID` | secret | Developer Dashboard → **Publisher → Settings** |
+| `CWS_ITEM_ID` | variable | The extension's ID, public in its store URL; publishing stays off while it is unset |
 
 ## License
 
