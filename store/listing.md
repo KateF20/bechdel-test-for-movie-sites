@@ -10,13 +10,15 @@ from the manifest (`src/manifest.ts`); everything else is entered by hand.
 
 ### Description
 
-Know before you watch: Bechdel Test for Movie Sites shows a movie's Bechdel Test
-score right next to its title on the movie sites you already use.
+See how a film portrays women before you watch it. Bechdel Test for Movie
+Sites shows a movie's Bechdel Test score right next to its title on IMDb,
+Letterboxd, TMDB, Rotten Tomatoes and the other movie sites you already use.
 
-The Bechdel Test asks three questions: are there at least two women in the
-movie, do they talk to each other, and do they talk about something other than
-a man? Scores come from bechdeltest.com, where thousands of movies have been
-rated by its community.
+The Bechdel Test, also called the Bechdel–Wallace test, asks three questions:
+does the movie have at least two named women, do they talk to each other, and
+do they talk about something other than a man? It is a simple, popular measure
+of how female characters are represented in film. Scores come from
+bechdeltest.com, where its community has rated more than 10,000 movies.
 
 ON MOVIE SITES
 A badge next to the title shows the score from 0 to 3 and links to the movie's

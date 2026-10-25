@@ -9,8 +9,9 @@ export const createManifest = (version: string): chrome.runtime.ManifestV3 => ({
   manifest_version: 3,
   name: NAME,
   // The Chrome Web Store rejects descriptions over 132 characters.
-  description: 'Shows Bechdel Test scores on IMDb, Kinopoisk, Letterboxd, TMDB and more, '
-    + 'and adds ratings and filters to bechdeltest.com.',
+  // It is also the store's summary, which weighs most in store search after the name.
+  description: 'Bechdel Test scores on IMDb, Letterboxd, TMDB, Rotten Tomatoes and more: '
+    + 'see how a film portrays women before you watch it.',
   version,
   minimum_chrome_version: '130',
   icons: { 16: 'icons/16.png', 48: 'icons/48.png', 128: 'icons/128.png' },
