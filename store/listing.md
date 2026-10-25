@@ -3,8 +3,9 @@
 Source for the fields of the Developer Dashboard. The name and the summary come
 from the manifest (`src/manifest.ts`); everything else is entered by hand.
 
-Name a few sites in a sentence, never as a list: a list of all supported sites
-was rejected as excessive keywords (violation "Yellow Argon").
+Name the sites once, in sentences that say what they are, never as a bare list:
+a bulleted list of all supported sites was rejected as excessive keywords
+(violation "Yellow Argon").
 
 ## Store listing
 
@@ -14,8 +15,8 @@ was rejected as excessive keywords (violation "Yellow Argon").
 ### Description
 
 See how a film portrays women before you watch it. Bechdel Test for Movie
-Sites shows a movie's Bechdel Test score right next to its title on IMDb,
-Letterboxd, TMDB, Rotten Tomatoes and the other movie sites you already use.
+Sites shows a movie's Bechdel Test score right next to its title on the movie
+sites you already use.
 
 The Bechdel Test, also called the Bechdel–Wallace test, asks three questions:
 does the movie have at least two named women, do they talk to each other, and
@@ -26,8 +27,10 @@ bechdeltest.com, where its community has rated more than 10,000 movies.
 ON MOVIE SITES
 A badge next to the title shows the score from 0 to 3 and links to the movie's
 page on bechdeltest.com. Movies that are not rated yet get a link to add them.
-It works on these and other popular movie sites in several languages; the
-project page lists them all.
+It works on the big international catalogs IMDb, TMDB, Letterboxd, Trakt,
+Rotten Tomatoes and Metacritic, and on popular regional ones: Kinopoisk in
+Russia, Douban in China, FilmAffinity in Spain, AlloCiné in France and Filmweb
+in Poland.
 
 ON BECHDELTEST.COM
 • IMDb and Kinopoisk ratings before every movie, color-coded and linked
