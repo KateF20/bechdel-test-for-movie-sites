@@ -13,7 +13,8 @@
     "watch": "node build.ts --watch",
     "zip": "node build.ts --zip",
     "check": "tsc",
-    "test": "vitest run"
+    "test": "vitest run",
+    "preversion": "npm run check && npm test"
   },
   "devDependencies": {
     "@types/chrome": "^0.3.6",

@@ -1,0 +1,86 @@
+name: Release
+
+# Runs for version tags created by `npm version`, e.g. v2.0.1.
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: Check that the tag matches package.json
+        run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
+      - run: npm run check
+      - run: npm test
+      - run: npm run zip
+      - uses: actions/upload-artifact@v7
+        with:
+          name: extension
+          path: bechdeltest-everywhere-*.zip
+      - name: Create GitHub release
+        run: gh release create "$GITHUB_REF_NAME" bechdeltest-everywhere-*.zip --verify-tag --generate-notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+  # Each store job runs once its repository variables are configured.
+  chrome-web-store:
+    needs: package
+    if: vars.CWS_ITEM_ID != ''
+    runs-on: ubuntu-latest
+    environment: chrome-web-store
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - uses: actions/download-artifact@v8
+        with:
+          name: extension
+      # Keyless: GitHub's OIDC token is exchanged for a short-lived token of
+      # the service account that the Chrome Web Store dashboard trusts.
+      - id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.CWS_SERVICE_ACCOUNT }}
+          token_format: access_token
+          access_token_scopes: https://www.googleapis.com/auth/chromewebstore
+      - run: node scripts/publish.ts chrome bechdeltest-everywhere-*.zip
+        env:
+          CWS_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
+          CWS_PUBLISHER_ID: ${{ vars.CWS_PUBLISHER_ID }}
+          CWS_ITEM_ID: ${{ vars.CWS_ITEM_ID }}
+
+  edge-add-ons:
+    needs: package
+    if: vars.EDGE_PRODUCT_ID != ''
+    runs-on: ubuntu-latest
+    environment: edge-add-ons
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - uses: actions/download-artifact@v8
+        with:
+          name: extension
+      - run: node scripts/publish.ts edge bechdeltest-everywhere-*.zip
+        env:
+          EDGE_PRODUCT_ID: ${{ vars.EDGE_PRODUCT_ID }}
+          EDGE_CLIENT_ID: ${{ vars.EDGE_CLIENT_ID }}
+          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}
