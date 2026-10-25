@@ -1,5 +1,5 @@
 // Chrome Web Store API v2 upload flow used by scripts/publish.ts. Credentials
-// come from the environment; see the "Releases" section of the README.
+// come from the environment; see docs/releasing.md.
 
 const POLL_INTERVAL = 5_000;
 const POLL_ATTEMPTS = 60;
