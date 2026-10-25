@@ -55,9 +55,11 @@ Open source: https://github.com/rrokot/bechdeltest-enhanced
 - Screenshots (1280×800, upload in this order):
   1. `store/screenshots/1-bechdeltest-ratings.png` — ratings and genres on bechdeltest.com
   2. `store/screenshots/2-bechdeltest-filters.png` — filters, with a genre excluded
-  3. `store/screenshots/3-tmdb.png` — badge on TMDB
-  4. `store/screenshots/4-trakt.png` — badge on Trakt
+  3. `store/screenshots/3-imdb.png` — badge on IMDb, with a disputed 3/3
+  4. `store/screenshots/4-tmdb.png` — badge on TMDB
   5. `store/screenshots/5-rotten-tomatoes.png` — badge on Rotten Tomatoes
+
+  The store takes at most five screenshots.
 
 ## Privacy practices
 
