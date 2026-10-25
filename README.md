@@ -70,7 +70,7 @@ The extension does not collect, store remotely or transmit any personal data.
 It downloads the public movie list from bechdeltest.com, and sends only IMDb
 IDs, catalog movie IDs, movie titles and Kinopoisk IDs to the sources listed
 above. The local copy, cached ratings and filter settings stay in Chrome
-storage.
+storage. See the full [privacy policy](PRIVACY.md).
 
 ## Development
 
