@@ -3,6 +3,9 @@
 Source for the fields of the Developer Dashboard. The name and the summary come
 from the manifest (`src/manifest.ts`); everything else is entered by hand.
 
+Name a few sites in a sentence, never as a list: a list of all supported sites
+was rejected as excessive keywords (violation "Yellow Argon").
+
 ## Store listing
 
 **Category:** Lifestyle → Entertainment
@@ -23,18 +26,8 @@ bechdeltest.com, where its community has rated more than 10,000 movies.
 ON MOVIE SITES
 A badge next to the title shows the score from 0 to 3 and links to the movie's
 page on bechdeltest.com. Movies that are not rated yet get a link to add them.
-Works on:
-• IMDb
-• Kinopoisk
-• Letterboxd
-• TMDB
-• Trakt
-• Rotten Tomatoes
-• Metacritic
-• Douban
-• FilmAffinity
-• AlloCiné
-• Filmweb
+It works on these and other popular movie sites in several languages; the
+project page lists them all.
 
 ON BECHDELTEST.COM
 • IMDb and Kinopoisk ratings before every movie, color-coded and linked
