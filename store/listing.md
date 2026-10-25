@@ -3,9 +3,10 @@
 Source for the fields of the Developer Dashboard. The name and the summary come
 from the manifest (`src/manifest.ts`); everything else is entered by hand.
 
-Name the sites once, in sentences that say what they are, never as a bare list:
-a bulleted list of all supported sites was rejected as excessive keywords
-(violation "Yellow Argon").
+Do not name the supported sites in the description: a bulleted list of all of
+them, and then a sentence naming six of them, were both rejected as excessive
+keywords (violation "Yellow Argon"). The summary in the manifest, which names
+four, passed. Point to the project page for the full list instead.
 
 ## Store listing
 
@@ -27,10 +28,9 @@ bechdeltest.com, where its community has rated more than 10,000 movies.
 ON MOVIE SITES
 A badge next to the title shows the score from 0 to 3 and links to the movie's
 page on bechdeltest.com. Movies that are not rated yet get a link to add them.
-It works on the big international catalogs IMDb, TMDB, Letterboxd, Trakt,
-Rotten Tomatoes and Metacritic, and on popular regional ones: Kinopoisk in
-Russia, Douban in China, FilmAffinity in Spain, AlloCiné in France and Filmweb
-in Poland.
+It works on eleven popular movie sites, from international catalogs to
+regional ones in Russia, China, Spain, France and Poland. The full list is on
+the project page: https://github.com/rrokot/bechdel-test-for-movie-sites
 
 ON BECHDELTEST.COM
 • IMDb and Kinopoisk ratings before every movie, color-coded and linked
@@ -44,8 +44,7 @@ No account, no API key, no tracking. The extension keeps a local copy of the
 public bechdeltest.com list and only sends movie IDs and titles to the rating
 sources. It never records which pages you visit.
 
-Unofficial: not affiliated with bechdeltest.com, IMDb or the other sites.
-Open source: https://github.com/rrokot/bechdel-test-for-movie-sites
+Unofficial: not affiliated with bechdeltest.com or any of the movie sites.
 
 ### Graphics
 
