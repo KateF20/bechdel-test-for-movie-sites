@@ -34,7 +34,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
 
-  # Each store job runs once its repository variables are configured.
+  # Runs once the store's repository variables are configured.
   chrome-web-store:
     needs: package
     if: vars.CWS_ITEM_ID != ''
@@ -60,27 +60,8 @@ jobs:
           service_account: ${{ vars.CWS_SERVICE_ACCOUNT }}
           token_format: access_token
           access_token_scopes: https://www.googleapis.com/auth/chromewebstore
-      - run: node scripts/publish.ts chrome bechdeltest-everywhere-*.zip
+      - run: node scripts/publish.ts bechdeltest-everywhere-*.zip
         env:
           CWS_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
           CWS_PUBLISHER_ID: ${{ vars.CWS_PUBLISHER_ID }}
           CWS_ITEM_ID: ${{ vars.CWS_ITEM_ID }}
-
-  edge-add-ons:
-    needs: package
-    if: vars.EDGE_PRODUCT_ID != ''
-    runs-on: ubuntu-latest
-    environment: edge-add-ons
-    steps:
-      - uses: actions/checkout@v7
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 24
-      - uses: actions/download-artifact@v8
-        with:
-          name: extension
-      - run: node scripts/publish.ts edge bechdeltest-everywhere-*.zip
-        env:
-          EDGE_PRODUCT_ID: ${{ vars.EDGE_PRODUCT_ID }}
-          EDGE_CLIENT_ID: ${{ vars.EDGE_CLIENT_ID }}
-          EDGE_API_KEY: ${{ secrets.EDGE_API_KEY }}

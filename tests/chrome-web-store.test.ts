@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { publishChrome, publishEdge } from '../scripts/stores.ts';
+import { publishChrome } from '../scripts/chrome-web-store.ts';
 
 type Route = (url: string, init: RequestInit) => Response;
 
@@ -69,45 +69,5 @@ describe('publishChrome', () => {
   it('requires its credentials', async () => {
     vi.stubEnv('CWS_ACCESS_TOKEN', '');
     await expect(publishChrome(archive)).rejects.toThrow('CWS_ACCESS_TOKEN is not set');
-  });
-});
-
-describe('publishEdge', () => {
-  const api = 'https://api.addons.microsoftedge.microsoft.com/v1/products/product/submissions';
-
-  beforeEach(() => {
-    vi.stubEnv('EDGE_PRODUCT_ID', 'product');
-    vi.stubEnv('EDGE_CLIENT_ID', 'client');
-    vi.stubEnv('EDGE_API_KEY', 'key');
-  });
-
-  it('uploads the package, then publishes the draft, following each operation', async () => {
-    const fetchMock = mockStore([
-      () => new Response(null, { status: 202, headers: { Location: 'upload-1' } }),
-      () => json({ status: 'InProgress' }),
-      () => json({ status: 'Succeeded' }),
-      () => new Response(null, { status: 202, headers: { Location: `${api}/operations/publish-1` } }),
-      () => json({ status: 'Succeeded' }),
-    ]);
-
-    await publishEdge(archive, '2.0.1');
-
-    expect(fetchMock.mock.calls.map(([url]) => url)).toEqual([
-      `${api}/draft/package`,
-      `${api}/draft/package/operations/upload-1`,
-      `${api}/draft/package/operations/upload-1`,
-      api,
-      `${api}/operations/publish-1`,
-    ]);
-    expect(fetchMock.mock.calls[0]?.[1]?.headers).toMatchObject({ Authorization: 'ApiKey key', 'X-ClientID': 'client' });
-    expect(fetchMock.mock.calls[3]?.[1]?.body).toBe(JSON.stringify({ notes: 'Version 2.0.1' }));
-  });
-
-  it('reports failed operations', async () => {
-    mockStore([
-      () => new Response(null, { status: 202, headers: { Location: 'upload-1' } }),
-      () => json({ status: 'Failed', message: 'Package is invalid', errors: [{ message: 'manifest' }] }),
-    ]);
-    await expect(publishEdge(archive, '2.0.1')).rejects.toThrow('Edge upload failed: Package is invalid');
   });
 });

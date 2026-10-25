@@ -1,5 +1,5 @@
-// Store upload flows used by scripts/publish.ts. Credentials come from the
-// environment; see the "Releases" section of the README.
+// Chrome Web Store API v2 upload flow used by scripts/publish.ts. Credentials
+// come from the environment; see the "Releases" section of the README.
 
 const POLL_INTERVAL = 5_000;
 const POLL_ATTEMPTS = 60;
@@ -26,8 +26,8 @@ const poll = async <T>(read: () => Promise<T>, done: (value: T) => boolean) => {
   throw new Error(`Gave up waiting after ${POLL_ATTEMPTS} attempts`);
 };
 
-// Chrome Web Store API v2, authenticated with a short-lived access token of a
-// service account (issued in CI through Workload Identity Federation).
+// Authenticated with a short-lived access token of a service account, issued in
+// CI through Workload Identity Federation.
 export const publishChrome = async (archive: Uint8Array<ArrayBuffer>) => {
   const api = 'https://chromewebstore.googleapis.com';
   const item = `publishers/${env('CWS_PUBLISHER_ID')}/items/${env('CWS_ITEM_ID')}`;
@@ -62,39 +62,4 @@ export const publishChrome = async (archive: Uint8Array<ArrayBuffer>) => {
     throw new Error(`Chrome submission ended as ${published.state}`);
   }
   console.log(`Chrome Web Store: submission is ${published.state}`);
-};
-
-// Microsoft Edge Add-ons API v1.1, authenticated with a Partner Center API key.
-export const publishEdge = async (archive: Uint8Array<ArrayBuffer>, version: string) => {
-  const api = `https://api.addons.microsoftedge.microsoft.com/v1/products/${env('EDGE_PRODUCT_ID')}/submissions`;
-  const auth = { Authorization: `ApiKey ${env('EDGE_API_KEY')}`, 'X-ClientID': env('EDGE_CLIENT_ID') };
-
-  type Operation = { status: 'InProgress' | 'Succeeded' | 'Failed'; message?: string; errors?: unknown };
-  // Both steps answer 202 with the operation to poll in the Location header.
-  const waitFor = async (response: Response, statusUrl: (operationId: string) => string, action: string) => {
-    const operationId = response.headers.get('Location')?.split('/').pop();
-    if (!operationId) throw new Error(`${action} returned no operation id`);
-    const operation = await poll(
-      async () => (await ensureOk(await fetch(statusUrl(operationId), { headers: auth }), `${action} status`))
-        .json() as Promise<Operation>,
-      ({ status }) => status !== 'InProgress',
-    );
-    if (operation.status !== 'Succeeded') {
-      throw new Error(`${action} failed: ${operation.message ?? ''} ${JSON.stringify(operation.errors ?? [])}`);
-    }
-  };
-
-  await waitFor(await ensureOk(await fetch(`${api}/draft/package`, {
-    method: 'POST',
-    headers: { ...auth, 'Content-Type': 'application/zip' },
-    body: archive,
-  }), 'Edge upload'), (id) => `${api}/draft/package/operations/${id}`, 'Edge upload');
-  console.log('Edge Add-ons: package uploaded');
-
-  await waitFor(await ensureOk(await fetch(api, {
-    method: 'POST',
-    headers: { ...auth, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ notes: `Version ${version}` }),
-  }), 'Edge publish'), (id) => `${api}/operations/${id}`, 'Edge publish');
-  console.log('Edge Add-ons: submitted for certification');
 };

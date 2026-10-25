@@ -104,13 +104,12 @@ git push --follow-tags
 
 The `v*` tag starts the Release workflow: it checks that the tag matches
 `package.json`, runs the checks and tests, builds the package, attaches it to a
-GitHub release and submits it to every store that is configured. A store job
-runs only when its repository variables are set, and each one uses its own
-GitHub environment (`chrome-web-store`, `edge-add-ons`), where approval rules
-can be added.
+GitHub release and submits it to the Chrome Web Store. The store job runs only
+when its repository variables are set, in the `chrome-web-store` GitHub
+environment, where approval rules can be added.
 
-Stores accept only a higher version than the one they already have, and their
-APIs can only update an existing item. The first version is therefore uploaded
+The store accepts only a higher version than the one it already has, and its
+API can only update an existing item. The first version is therefore uploaded
 by hand, together with the listing, screenshots and privacy answers; set the
 variables below afterwards.
 
@@ -154,14 +153,6 @@ token, so no keys or refresh tokens are stored anywhere.
    | `CWS_SERVICE_ACCOUNT` | `chrome-web-store@PROJECT_ID.iam.gserviceaccount.com` |
    | `CWS_PUBLISHER_ID` | Developer Dashboard → **Publisher → Settings** |
    | `CWS_ITEM_ID` | The extension's ID in the Developer Dashboard |
-
-### Microsoft Edge Add-ons
-
-The same package runs in Edge. After the first manual submission in Partner
-Center, open **Microsoft Edge → Publish API**, enable the API key experience and
-create credentials. Then set the variables `EDGE_PRODUCT_ID` (from the
-extension's overview page) and `EDGE_CLIENT_ID`, and the secret `EDGE_API_KEY`.
-Partner Center API keys expire; renew the secret when they do.
 
 ## License
 
