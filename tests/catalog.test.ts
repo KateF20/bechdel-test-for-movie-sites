@@ -56,6 +56,8 @@ describe('catalog sites', () => {
     const catalogMatches = manifest.content_scripts?.find(({ js }) => js?.includes('catalog.js'))?.matches;
     expect(catalogMatches).toEqual(SITES.flatMap(({ hosts }) => hosts.map((host) => `https://${host}/*`)));
     expect(manifest.version).toBe('1.2.3');
+    expect(manifest.name.length).toBeLessThanOrEqual(75);
+    expect(manifest.description!.length).toBeLessThanOrEqual(132);
     expect(manifest.host_permissions).toContain('https://query.wikidata.org/*');
   });
 });

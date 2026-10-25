@@ -1,7 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Movie } from '../src/bechdeltest/model.ts';
 import { collectMovies, ratingTier, renderMovie } from '../src/bechdeltest/ui/badges.ts';
-import { applyFilters, DEFAULT_FILTERS, matchesFilters } from '../src/bechdeltest/ui/filters.ts';
+import {
+  applyFilters,
+  DEFAULT_FILTERS,
+  findList,
+  loadFilters,
+  matchesFilters,
+  onFiltersChanged,
+  saveFilters,
+} from '../src/bechdeltest/ui/filters.ts';
 import { mountPanel } from '../src/bechdeltest/ui/panel.ts';
 import { fixture } from './helpers.ts';
 
@@ -121,5 +129,42 @@ describe('mountPanel', () => {
 
     panel.setProgress({ total: 4, pending: 1, failed: 0 });
     expect(list.querySelector('.bte-status')?.textContent).toBe('Ratings 3 / 4');
+  });
+});
+
+describe('pages without a .list wrapper', () => {
+  it('filters rows that sit directly in <main>', () => {
+    document.body.innerHTML = fixture('bechdeltest-top250.html');
+    const movies = collectMovies(document);
+    const list = findList(movies.values())!;
+
+    expect(list.tagName).toBe('MAIN');
+    mountPanel(list, DEFAULT_FILTERS, vi.fn());
+    expect(list.querySelector('h2')?.previousElementSibling?.className).toBe('bte-filters');
+
+    applyFilters(list, movies.values(), { ...DEFAULT_FILTERS, bechdelMin: 3 });
+    expect(visibleText(list)).toEqual(['year-2010', 'How to Train Your Dragon', 'Inception']);
+  });
+});
+
+describe('filter storage', () => {
+  const changeListener = () => vi.mocked(chrome.storage.onChanged.addListener).mock.calls[0]![0];
+
+  it('round-trips saved filters', async () => {
+    await saveFilters({ ...DEFAULT_FILTERS, imdbMin: 7 });
+    await expect(loadFilters()).resolves.toEqual({ ...DEFAULT_FILTERS, imdbMin: 7 });
+  });
+
+  it('applies changes from other tabs but not echoes of its own writes', async () => {
+    const listener = vi.fn();
+    onFiltersChanged(listener);
+
+    await saveFilters({ ...DEFAULT_FILTERS, imdbMin: 7 });
+    const own = (await chrome.storage.sync.get('filters')).filters;
+    changeListener()({ filters: { newValue: own } }, 'sync');
+    expect(listener).not.toHaveBeenCalled();
+
+    changeListener()({ filters: { newValue: { filters: { kpMin: 8 }, writer: 'another tab' } } }, 'sync');
+    expect(listener).toHaveBeenCalledWith({ ...DEFAULT_FILTERS, kpMin: 8 });
   });
 });

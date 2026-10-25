@@ -7,7 +7,8 @@ const pattern = (host: string) => `https://${host}/*`;
 export const createManifest = (version: string): chrome.runtime.ManifestV3 => ({
   manifest_version: 3,
   name: 'Bechdel Test Everywhere',
-  description: 'Shows Bechdel Test scores on IMDb, Kinopoisk, Letterboxd, TMDB and other movie sites, '
+  // The Chrome Web Store rejects descriptions over 132 characters.
+  description: 'Shows Bechdel Test scores on IMDb, Kinopoisk, Letterboxd, TMDB and more, '
     + 'and adds ratings and filters to bechdeltest.com.',
   version,
   minimum_chrome_version: '130',

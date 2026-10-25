@@ -1,10 +1,10 @@
 import { imdbCache } from '../../shared/caches.ts';
-import { URLS } from '../../shared/config.ts';
+import { LINKS } from '../../shared/config.ts';
 import type { MoviePatch, Update } from '../model.ts';
 import { fetchImdbRatings, type ImdbRating } from '../../sources/imdb.ts';
 
 const toPatch = (imdbId: string, { rating, votes, genres }: ImdbRating): MoviePatch => {
-  const href = `${URLS.imdbTitle}/${imdbId}/`;
+  const href = `${LINKS.imdbTitle}/${imdbId}/`;
   return {
     imdb: rating === null
       ? { status: 'missing', reason: 'This title has no IMDb rating yet', href }

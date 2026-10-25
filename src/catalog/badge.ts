@@ -1,5 +1,5 @@
 import { SCORE_DESCRIPTIONS, type BechdelMovie } from '../shared/bechdel.ts';
-import { URLS } from '../shared/config.ts';
+import { LINKS, URLS } from '../shared/config.ts';
 
 export type BadgeContent = { kind: 'rated'; movie: BechdelMovie } | { kind: 'unrated' };
 
@@ -53,7 +53,7 @@ export const describeBadge = (content: BadgeContent) => {
       score: 'none',
       text: 'Bechdel: not rated',
       title: 'This movie is not on bechdeltest.com yet — add it there',
-      href: URLS.bechdeltestAdd,
+      href: LINKS.bechdeltestAdd,
     };
   }
   const { score, dubious, path, title } = content.movie;

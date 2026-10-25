@@ -14,20 +14,23 @@ export const CONFIG = {
   genreLimit: 3,
 } as const;
 
+// Everything the extension fetches. Its hosts become the manifest's
+// host_permissions, so links that are only shown to people live in LINKS.
 export const URLS = {
   bechdeltest: 'https://bechdeltest.com',
   bechdeltestSitemap: 'https://bechdeltest.com/sitemap.xml',
-  bechdeltestAdd: 'https://bechdeltest.com/add/',
   wikidataSparql: 'https://query.wikidata.org/sparql',
   imdbGraphql: 'https://api.graphql.imdb.com/',
-  imdbTitle: 'https://www.imdb.com/title',
   kinopoiskRating: 'https://rating.kinopoisk.ru',
   kinopoiskSearch: 'https://www.kinopoisk.ru/index.php',
   kinopoiskFilm: 'https://www.kinopoisk.ru/film',
 } as const;
 
-// Every host the extension fetches from; the manifest's host_permissions are
-// generated from it.
+export const LINKS = {
+  bechdeltestAdd: 'https://bechdeltest.com/add/',
+  imdbTitle: 'https://www.imdb.com/title',
+} as const;
+
 export const FETCH_HOSTS: readonly string[] = [
   ...new Set(Object.values(URLS).map((url) => new URL(url).hostname)),
 ];

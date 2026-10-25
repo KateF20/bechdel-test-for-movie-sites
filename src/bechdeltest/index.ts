@@ -2,7 +2,7 @@ import { loadImdb } from './loaders/imdb.ts';
 import { loadKinopoisk } from './loaders/kinopoisk.ts';
 import { progress, type MoviePatch, type Source, type Update } from './model.ts';
 import { collectMovies, renderMovie } from './ui/badges.ts';
-import { applyFilters, loadFilters, onFiltersChanged, saveFilters, type Filters } from './ui/filters.ts';
+import { applyFilters, findList, loadFilters, onFiltersChanged, saveFilters, type Filters } from './ui/filters.ts';
 import { mountPanel } from './ui/panel.ts';
 
 const sourcePatch = (source: Source, reason: string): MoviePatch => {
@@ -14,15 +14,14 @@ const main = async () => {
   const movies = collectMovies(document);
   if (!movies.size) return;
 
-  const list = document.querySelector<HTMLElement>('.list');
-  const hasRows = [...movies.values()].some(({ views }) => views.some(({ row }) => row));
+  const list = findList(movies.values());
   let filters: Filters = await loadFilters();
 
   const setFilters = (next: Filters) => {
     filters = next;
     scheduleRefresh();
   };
-  const panel = list && hasRows
+  const panel = list
     ? mountPanel(list, filters, (next) => {
       setFilters(next);
       void saveFilters(next);

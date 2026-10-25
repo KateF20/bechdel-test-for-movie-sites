@@ -16,17 +16,27 @@ export const DEFAULT_FILTERS: Filters = {
 
 const STORAGE_KEY = 'filters';
 
-const withDefaults = (value: unknown): Filters => ({ ...DEFAULT_FILTERS, ...(value as Partial<Filters>) });
+// Each saved value names the tab that wrote it. Storage reports every write
+// back to the writer too, and late reports of a tab's own earlier writes must
+// not undo the changes it made since.
+type Stored = { filters: Partial<Filters>; writer: string };
+const WRITER = crypto.randomUUID();
 
-export const loadFilters = async () => withDefaults((await chrome.storage.sync.get(STORAGE_KEY))[STORAGE_KEY]);
+const withDefaults = (value: Partial<Filters> | undefined): Filters => ({ ...DEFAULT_FILTERS, ...value });
 
-export const saveFilters = (filters: Filters) => chrome.storage.sync.set({ [STORAGE_KEY]: filters });
+export const loadFilters = async () => (
+  withDefaults(((await chrome.storage.sync.get(STORAGE_KEY))[STORAGE_KEY] as Stored | undefined)?.filters)
+);
+
+export const saveFilters = (filters: Filters) => (
+  chrome.storage.sync.set({ [STORAGE_KEY]: { filters, writer: WRITER } satisfies Stored })
+);
 
 // Keeps every open bechdeltest tab on the same filters.
 export const onFiltersChanged = (listener: (filters: Filters) => void) => {
   chrome.storage.onChanged.addListener((changes, area) => {
-    const change = changes[STORAGE_KEY];
-    if (area === 'sync' && change) listener(withDefaults(change.newValue));
+    const stored = changes[STORAGE_KEY]?.newValue as Stored | undefined;
+    if (area === 'sync' && stored && stored.writer !== WRITER) listener(withDefaults(stored.filters));
   });
 };
 
@@ -46,6 +56,15 @@ export const matchesFilters = (movie: Movie, filters: Filters) => (
   && passesMinimum(movie.imdb, filters.imdbMin)
   && !movie.genres?.some((genre) => filters.excludedGenres.includes(genre))
 );
+
+// Most pages wrap the rows in .list, but some (e.g. the IMDb Top 250) put them
+// straight into <main>; either way the list is the rows' parent.
+export const findList = (movies: Iterable<Movie>) => {
+  for (const { views } of movies) {
+    for (const { row } of views) if (row?.parentElement) return row.parentElement;
+  }
+  return null;
+};
 
 // The list is flat: each year heading is followed by its movies and ads.
 const updateYearGroups = (list: HTMLElement) => {
