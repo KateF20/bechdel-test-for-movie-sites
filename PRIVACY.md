@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Bechdel Test Everywhere does not collect, sell or share any personal data, and
+Bechdel Test for Movie Sites does not collect, sell or share any personal data, and
 it has no servers of its own.
 
 ## What the extension requests
@@ -36,4 +36,4 @@ extension removes all of its data.
 
 ## Contact
 
-Questions: [GitHub issues](https://github.com/rrokot/bechdeltest-enhanced/issues).
+Questions: [GitHub issues](https://github.com/rrokot/bechdel-test-for-movie-sites/issues).

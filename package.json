@@ -1,5 +1,5 @@
 {
-  "name": "bechdeltest-everywhere",
+  "name": "bechdel-test-for-movie-sites",
   "version": "2.0.0",
   "private": true,
   "description": "Chrome extension that shows Bechdel Test scores on movie catalogs and adds ratings and filters to bechdeltest.com",

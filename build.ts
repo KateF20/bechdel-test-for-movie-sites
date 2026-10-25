@@ -24,7 +24,7 @@ const zipDist = async () => {
     const path = join(entry.parentPath, entry.name);
     files[relative(OUT_DIR, path).replaceAll('\\', '/')] = await readFile(path);
   }
-  const name = `bechdeltest-everywhere-${version}.zip`;
+  const name = `bechdel-test-for-movie-sites-${version}.zip`;
   await writeFile(name, zipSync(files, { level: 9 }));
   console.log(`Packed ${Object.keys(files).length} files into ${name}`);
 };

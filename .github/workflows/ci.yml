@@ -24,4 +24,4 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: extension
-          path: bechdeltest-everywhere-*.zip
+          path: bechdel-test-for-movie-sites-*.zip

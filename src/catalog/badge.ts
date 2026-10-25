@@ -67,7 +67,7 @@ export const describeBadge = (content: BadgeContent) => {
 
 export const createBadge = () => {
   const host = document.createElement('span');
-  host.dataset.bechdelEverywhere = '';
+  host.dataset.bechdelBadge = '';
   const style = document.createElement('style');
   style.textContent = STYLES;
   const link = document.createElement('a');

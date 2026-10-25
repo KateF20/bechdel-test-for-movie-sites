@@ -1,16 +1,19 @@
-# Bechdel Test Everywhere
+# Bechdel Test for Movie Sites
 
 A Chrome extension that shows [bechdeltest.com](https://bechdeltest.com/)
 scores on popular movie sites, and adds IMDb and Kinopoisk ratings, genres and
 filters to bechdeltest.com itself.
+
+It is an unofficial project, not affiliated with bechdeltest.com, IMDb or the
+other sites.
 
 ![Bechdel Test badge on IMDb](store/screenshots/2-imdb.png)
 
 ## Install
 
 - **Chrome Web Store** — coming soon.
-- **From a release** — download `bechdeltest-everywhere-*.zip` from the
-  [latest release](https://github.com/rrokot/bechdeltest-enhanced/releases/latest),
+- **From a release** — download `bechdel-test-for-movie-sites-*.zip` from the
+  [latest release](https://github.com/rrokot/bechdel-test-for-movie-sites/releases/latest),
   unpack it, then open `chrome://extensions`, turn on **Developer mode** and
   choose **Load unpacked**.
 

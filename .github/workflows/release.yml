@@ -28,9 +28,9 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: extension
-          path: bechdeltest-everywhere-*.zip
+          path: bechdel-test-for-movie-sites-*.zip
       - name: Create GitHub release
-        run: gh release create "$GITHUB_REF_NAME" bechdeltest-everywhere-*.zip --verify-tag --generate-notes
+        run: gh release create "$GITHUB_REF_NAME" bechdel-test-for-movie-sites-*.zip --verify-tag --generate-notes
         env:
           GH_TOKEN: ${{ github.token }}
 
@@ -61,7 +61,7 @@ jobs:
           service_account: ${{ secrets.CWS_SERVICE_ACCOUNT }}
           token_format: access_token
           access_token_scopes: https://www.googleapis.com/auth/chromewebstore
-      - run: node scripts/publish.ts bechdeltest-everywhere-*.zip
+      - run: node scripts/publish.ts bechdel-test-for-movie-sites-*.zip
         env:
           CWS_ACCESS_TOKEN: ${{ steps.auth.outputs.access_token }}
           CWS_PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}

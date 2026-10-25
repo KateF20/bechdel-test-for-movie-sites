@@ -10,7 +10,7 @@ from the manifest (`src/manifest.ts`); everything else is entered by hand.
 
 ### Description
 
-Know before you watch: Bechdel Test Everywhere shows a movie's Bechdel Test
+Know before you watch: Bechdel Test for Movie Sites shows a movie's Bechdel Test
 score right next to its title on the movie sites you already use.
 
 The Bechdel Test asks three questions: are there at least two women in the
@@ -46,7 +46,8 @@ No account, no API key, no tracking. The extension keeps a local copy of the
 public bechdeltest.com list and only sends movie IDs and titles to the rating
 sources. It never records which pages you visit.
 
-Open source: https://github.com/rrokot/bechdeltest-enhanced
+Unofficial: not affiliated with bechdeltest.com, IMDb or the other sites.
+Open source: https://github.com/rrokot/bechdel-test-for-movie-sites
 
 ### Graphics
 
@@ -104,4 +105,4 @@ not sold to third parties, not used or transferred for purposes unrelated to the
 single purpose, and not used for creditworthiness or lending.
 
 **Privacy policy URL:**
-https://github.com/rrokot/bechdeltest-enhanced/blob/main/PRIVACY.md
+https://github.com/rrokot/bechdel-test-for-movie-sites/blob/main/PRIVACY.md
