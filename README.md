@@ -31,7 +31,6 @@ link to add them.
 - Up to three IMDb genres per movie
 - Filters by minimum KP rating, IMDb rating and Bechdel score, plus genre
   exclusion; settings sync across tabs and devices
-- Wider, non-wrapping movie list on desktop
 
 ## How it works
 

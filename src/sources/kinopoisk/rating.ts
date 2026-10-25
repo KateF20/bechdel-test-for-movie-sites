@@ -11,7 +11,8 @@ export const parseRatingXml = (xmlText: string): KinopoiskRating => {
   const rating = Number.parseFloat(node?.textContent ?? '');
   const votes = Number.parseInt(node?.getAttribute('num_vote') ?? '', 10);
   return {
-    rating: Number.isFinite(rating) ? rating : null,
+    // Kinopoisk reports 0 for titles nobody has rated yet; real ratings start at 1.
+    rating: Number.isFinite(rating) && rating > 0 ? rating : null,
     votes: Number.isFinite(votes) ? votes : null,
   };
 };

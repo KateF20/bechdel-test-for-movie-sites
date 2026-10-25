@@ -39,19 +39,6 @@
   font: 11px/1.2 Arial, sans-serif;
 }
 
-/* Wider, non-wrapping movie list on desktop. */
-.list .movie {
-  white-space: nowrap;
-}
-@media (min-width: 720px) {
-  body {
-    max-width: 1100px;
-  }
-  .columns {
-    grid-template-columns: minmax(520px, 1.45fr) minmax(260px, 1fr);
-  }
-}
-
 .bte-filters {
   display: flex;
   flex-wrap: wrap;

@@ -14,7 +14,8 @@ const ttlByRating = ({ rating }: { rating: number | null }) => (
 );
 
 export const imdbCache = createCache<ImdbRating>({ name: 'imdb', version: 1, ttl: ttlByRating });
-export const kinopoiskCache = createCache<KinopoiskEntry>({ name: 'kinopoisk', version: 1, ttl: ttlByRating });
+// Version 2 drops entries that stored Kinopoisk's 0 as a rating.
+export const kinopoiskCache = createCache<KinopoiskEntry>({ name: 'kinopoisk', version: 2, ttl: ttlByRating });
 
 // Keyed by "<Wikidata property>:<catalog id>".
 export const imdbIdCache = createCache<{ imdbId: string | null }>({

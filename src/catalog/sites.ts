@@ -74,7 +74,8 @@ export const SITES: readonly Site[] = [
   {
     name: 'Rotten Tomatoes',
     hosts: ['www.rottentomatoes.com'],
-    anchor: 'h1#media-hero-label',
+    // The visible title; h1#media-hero-label is only an accessible label.
+    anchor: 'media-hero rt-text[slot="title"]',
     identify: byPath(/^\/(m|tv)\/([^/]+)\/?$/, ([, kind, slug]) => wikidata('P1258', `${kind}/${slug}`)),
   },
   {

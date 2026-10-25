@@ -51,6 +51,7 @@ describe('Kinopoisk parsing', () => {
   it('reads the rating XML', () => {
     expect(parseRatingXml(fixture('kinopoisk-rating.xml'))).toEqual({ rating: 9.111, votes: 1150774 });
     expect(parseRatingXml('<rating></rating>')).toEqual({ rating: null, votes: null });
+    expect(parseRatingXml('<rating><kp_rating num_vote="3">0</kp_rating></rating>')).toEqual({ rating: null, votes: 3 });
   });
 
   it('reads a film page including original director names', () => {
