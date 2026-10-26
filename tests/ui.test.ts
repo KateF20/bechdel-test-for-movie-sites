@@ -115,7 +115,7 @@ describe('mountPanel', () => {
 
     expect(list.querySelector('h2')?.previousElementSibling?.className).toBe('bte-filters');
     expect([...list.querySelectorAll('.bte-filters label')].map(({ firstChild, title }) => [firstChild?.textContent, title]))
-      .toEqual([['KP ≥', 'Minimum Kinopoisk rating'], ['IMDb ≥', ''], ['B ≥', 'Minimum Bechdel test score (0–3)']]);
+      .toEqual([['KP ≥', 'Kinopoisk rating'], ['IMDb ≥', ''], ['B ≥', 'Bechdel Test score']]);
 
     const select = list.querySelector('select')!;
     select.value = '8';
