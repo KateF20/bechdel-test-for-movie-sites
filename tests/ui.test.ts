@@ -114,7 +114,7 @@ describe('mountPanel', () => {
     const panel = mountPanel(list, { ...DEFAULT_FILTERS, excludedGenres: ['Horror'] }, onChange);
 
     expect(list.querySelector('h2')?.previousElementSibling?.className).toBe('bte-filters');
-    expect([...list.querySelectorAll('.bte-filters label')].map(({ firstChild, title }) => [firstChild?.textContent, title]))
+    expect([...list.querySelectorAll<HTMLLabelElement>('.bte-filters label')].map(({ firstChild, title }) => [firstChild?.textContent, title]))
       .toEqual([['KP ≥', 'Kinopoisk rating'], ['IMDb ≥', ''], ['B ≥', 'Bechdel Test score']]);
 
     const select = list.querySelector('select')!;
