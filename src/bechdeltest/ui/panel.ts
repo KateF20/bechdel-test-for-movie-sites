@@ -7,9 +7,9 @@ type NumericFilter = 'kpMin' | 'imdbMin' | 'bechdelMin';
 
 // Abbreviated labels get a tooltip that spells out what they filter by.
 const CONTROLS: { key: NumericFilter; label: string; title?: string; values: number[] }[] = [
-  { key: 'kpMin', label: 'KP ≥', title: 'Minimum Kinopoisk rating', values: [5, 6, 7, 8, 9] },
+  { key: 'kpMin', label: 'KP ≥', title: 'Kinopoisk rating', values: [5, 6, 7, 8, 9] },
   { key: 'imdbMin', label: 'IMDb ≥', values: [5, 6, 7, 8, 9] },
-  { key: 'bechdelMin', label: 'B ≥', title: 'Minimum Bechdel test score (0–3)', values: [1, 2, 3] },
+  { key: 'bechdelMin', label: 'B ≥', title: 'Bechdel Test score', values: [1, 2, 3] },
 ];
 
 type Props = Partial<{
